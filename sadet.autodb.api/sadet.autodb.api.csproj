@@ -6,4 +6,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Content Include="..\create_database.sql">
+        <Link>create_database.sql</Link>
+      </Content>
+    </ItemGroup>
+
 </Project>
