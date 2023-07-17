@@ -12,7 +12,7 @@ CREATE  TABLE Data (
 	createdat	TimeStamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 	appid	int,
 	completion float,
-	isavarage boolean
+	isaverage boolean
 );
 
 INSERT INTO Games(appid, name) VALUES (-1, 'Average');
