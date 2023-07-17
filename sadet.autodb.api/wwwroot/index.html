@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+    function doGetRequest(url, callback) {
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(async (response) => {
+                if (response.status == 200) {
+                    callback(await response.json())
+                }
+            })
+            .catch(error => console.error(error));
+    }
+
+    function createChart(obj, data) {
+        const labels = [];
+        for (let i = 0; i < data[0].data.length; ++i) {
+            labels.push(i.toString());
+        }
+        const config = {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: data
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Chart.js Line Chart'
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            },
+        };
+        return new Chart(ctx, config);
+    }
+
+    function getDataset(appid, name, callback) {
+        doGetRequest('http://localhost:10875/api/data/' + appid, function (data) {
+            const dataset =
+                {
+                    label: name,
+                    data: data.data,
+                    borderColor: "#" +
+                        Math.floor(Math.random() * 255).toString(16)
+                        + Math.floor(Math.random() * 255).toString(16)
+                        + Math.floor(Math.random() * 255).toString(16),
+                    backgroundColor: "#" +
+                        Math.floor(Math.random() * 255).toString(16)
+                        + Math.floor(Math.random() * 255).toString(16)
+                        + Math.floor(Math.random() * 255).toString(16),
+                    fill:false,
+
+                }
+            callback(dataset);
+        });
+    }
+
+    function getDatasets(stack, games, values, callback) {
+        if (stack >= games.length) {
+            callback(values);
+            return;
+        }
+        const game = games[stack];
+        getDataset(game.appid, game.name, function (dataset) {
+            values.push(dataset);
+            getDatasets(stack + 1, games, values, callback);
+        });
+    }
+
+    function getGames(stack, ids, values, callback) {
+        if (stack >= ids.length) {
+            callback(values);
+            return;
+        }
+        const id = ids[stack];
+        doGetRequest("http://localhost:10875/api/games/" + id, function (response) {
+            values.push(response);
+            getGames(stack + 1, ids, values, callback);
+        });
+    }
+
+
+</script>
+
+<!-- Chart.js implementation-->
+<script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
+    let appids = urlParams.get('appid');
+    if (appids === null)
+        appids = [-1];
+    else
+        appids = appids.split(' ');
+
+    const ctx = document.getElementById('myChart');
+
+    getGames(0, appids, [], function (response) {
+        getDatasets(0, response, [], function (values) {
+            createChart(ctx, values);
+        });
+    });
+
+</script>
+
+</body>
+</html>

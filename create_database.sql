@@ -3,15 +3,17 @@ CREATE DATABASE sadet;
 \c sadet;
 
 CREATE TABLE Games (
-	AppId	int  PRIMARY KEY,
-	Name	varchar(1000)
+	appid	int  PRIMARY KEY,
+	name	varchar(1000)
 );
 
 CREATE  TABLE Data (
-	Index	SERIAL PRIMARY KEY,
-	CreatedAt	TimeStamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-	AppId	int,
-	Completion float,
-	IsAvarage boolean
+	index	SERIAL PRIMARY KEY,
+	createdat	TimeStamp WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+	appid	int,
+	completion float,
+	isaverage boolean
 );
+
+INSERT INTO Games(appid, name) VALUES (-1, 'Average');
 

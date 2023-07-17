@@ -16,9 +16,11 @@ builder.Services.AddScoped<IGamesRepository, GamesRepository>();
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
-app.MapGet("/", () => "Hello World!");
+//app.MapGet("/", () => "Hello World!");
 
 app.MapControllers();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.Run();

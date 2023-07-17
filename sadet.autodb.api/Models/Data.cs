@@ -15,6 +15,6 @@ public class Data
     public int Appid { get; set; }
     [Column("completion")]
     public double Completion { get; set; }
-    [Column("isavarage")]
-    public bool IsAvarage { get; set; }
+    [Column("isaverage")]
+    public bool IsAverage { get; set; }
 }
