@@ -1,0 +1,17 @@
+.header {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 20%;
+}
+
+.chart {
+    width: 75%;
+    height: 60%;
+}
+
+.outer-chart {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+}

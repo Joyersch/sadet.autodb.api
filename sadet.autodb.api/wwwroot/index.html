@@ -2,147 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-
+    <title>Steam Achievement Dashboards</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/apiWrapper.js"></script>
+    <script src="js/urlParser.js"></script>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-<div>
-    <canvas id="myChart"></canvas>
+<div class="header">
+    <h1 id="bigh1">0%</h1>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="outer-chart">
+    <div class="chart">
+        <canvas id="myChart"></canvas>
+    </div>
+</div>
 
 <script>
-    const url = 'http://localhost:10875'
-</script>
-<script>
-    function doGetRequest(url, callback) {
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(async (response) => {
-                if (response.status == 200) {
-                    callback(await response.json())
-                }
-            })
-            .catch(error => console.error(error));
-    }
+    const wrapper = new ApiWrapper();
+    const charts = new Charts();
 
-    function createChart(obj, data) {
-        const labels = [];
-        for (let i = 0; i < data[0].data.length; ++i) {
-            labels.push(i.toString());
-        }
-        const config = {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: data
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Chart.js Line Chart'
-                    }
-                },
-                scales: {
-                    x: {
-                        display: true,
-                        title: {
-                            display: true
-                        }
-                    },
-                    y: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Value'
-                        },
-                        suggestedMin: 0,
-                        suggestedMax: 100
-                    }
-                }
-            },
-        };
-        return new Chart(ctx, config);
-    }
-
-    function getDataset(appid, name, callback) {
-        doGetRequest(url + '/api/data/' + appid, function (data) {
-            const dataset =
-                {
-                    label: name,
-                    data: data.data,
-                    borderColor: "#" +
-                        Math.floor(Math.random() * 255).toString(16)
-                        + Math.floor(Math.random() * 255).toString(16)
-                        + Math.floor(Math.random() * 255).toString(16),
-                    backgroundColor: "#" +
-                        Math.floor(Math.random() * 255).toString(16)
-                        + Math.floor(Math.random() * 255).toString(16)
-                        + Math.floor(Math.random() * 255).toString(16),
-                    fill:false,
-
-                }
-            callback(dataset);
-        });
-    }
-
-    function getDatasets(stack, games, values, callback) {
-        if (stack >= games.length) {
-            callback(values);
-            return;
-        }
-        const game = games[stack];
-        getDataset(game.appid, game.name, function (dataset) {
-            values.push(dataset);
-            getDatasets(stack + 1, games, values, callback);
-        });
-    }
-
-    function getGames(stack, ids, values, callback) {
-        if (stack >= ids.length) {
-            callback(values);
-            return;
-        }
-        const id = ids[stack];
-        doGetRequest(url + "/api/games/" + id, function (response) {
-            values.push(response);
-            getGames(stack + 1, ids, values, callback);
-        });
-    }
-
-
-</script>
-
-<!-- Chart.js implementation-->
-<script>
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-
-    let appids = urlParams.get('appid');
-    if (appids === null)
-        appids = [-1];
-    else
-        appids = appids.split(' ');
-
-    const ctx = document.getElementById('myChart');
-
-    getGames(0, appids, [], function (response) {
-        getDatasets(0, response, [], function (values) {
-            createChart(ctx, values);
-        });
+    bigh1 = document.getElementById('bigh1');
+    wrapper.getGameDataLimit(-1, 1).then(function (data) {
+        bigh1.innerHTML = data.data[0] + '%';
     });
 
-</script>
 
+    let myChart = document.getElementById('myChart');
+
+    wrapper.getGameDataLimit(-1, 100).then(function (data) {
+        const dataset = {
+            label: name,
+            data: data.data,
+            borderColor: "#" +
+                Math.floor(Math.random() * 255).toString(16)
+                + Math.floor(Math.random() * 255).toString(16)
+                + Math.floor(Math.random() * 255).toString(16),
+            backgroundColor: "#" +
+                Math.floor(Math.random() * 255).toString(16)
+                + Math.floor(Math.random() * 255).toString(16)
+                + Math.floor(Math.random() * 255).toString(16),
+            fill: false,
+        };
+        charts.createChart(myChart, dataset);
+    });
+</script>
 </body>
 </html>
