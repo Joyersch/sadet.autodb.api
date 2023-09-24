@@ -5,13 +5,101 @@
     height: 20%;
 }
 
-.chart {
-    width: 75%;
-    height: 60%;
+.data-selection {
+    display: flex;
+    flex-direction: column;
+}
+
+.data-manipulation {
+    display: flex;
+    flex-direction: row;
+    margin: 1% 1% 0.5% 1%;
+}
+
+.data-search {
+    left: 0;
+    width: 60%;
+}
+
+.data-search input[type='text'] {
+    width: 95%;
+}
+
+.data-option {
+    display: flex;
+    justify-content: left;
+    width: 60%;
+    right: 100%;
+}
+
+.data-option label {
+    margin: 0 0.5% 0 0.5%;
+}
+
+.table-container {
+    margin: 0.5% 1% 0.5% 1%;
+}
+
+.data-table {
+    width: 100%;
+    margin: 0.5% 2.5% 0.5% 2.5%;
+    table-layout: fixed;
+}
+
+.data-table td:nth-child(3) {
+    text-align: center;
+}
+
+
+.data-paging {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0.5% 0 2.5% 0;
+}
+
+.data-paging button {
+    width: 5%;
+}
+
+.data-paging div {
+    display: flex;
+    font-size: large;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 5% 0% 5%;
 }
 
 .outer-chart {
     display: flex;
     flex-flow: row;
-    justify-content: center;
+    justify-content: space-evenly;
+    height: 50%;
 }
+
+.pie-chart {
+    width: 26%;
+}
+
+.chart {
+    width: 50%;
+    height: 50%;
+}
+
+.line-chart {
+
+}
+
+.chart-info-display {
+    display: flex;
+    font-size: xxx-large;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.chart-control select {
+    width: 100%;
+}
+

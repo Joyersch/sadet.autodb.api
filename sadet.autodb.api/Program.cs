@@ -6,13 +6,11 @@ using sadet.autodb.api.Repository;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(
-    options =>
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-    });
+    options => { options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")); });
 
 builder.Services.AddScoped<IDataRepository, DataRepository>();
 builder.Services.AddScoped<IGamesRepository, GamesRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddControllers();
 
 var app = builder.Build();

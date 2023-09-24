@@ -4,6 +4,9 @@ namespace sadet.autodb.api.Interfaces;
 
 public interface IDataRepository
 {
-    public bool Exists(int appid);
-    public CustomData GetData(int appId);
+    public bool Exists(long appid);
+    public DataSet GetData(long appId);
+    public DataSet GetData(long appId, int limit);
+
+    public bool HasDropped(long appId);
 }

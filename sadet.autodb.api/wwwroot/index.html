@@ -4,51 +4,170 @@
     <meta charset="UTF-8">
     <title>Steam Achievement Dashboards</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/charts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="js/apiWrapper.js"></script>
     <script src="js/urlParser.js"></script>
+    <script src="js/gamesTable.js"></script>
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
 <div class="header">
-    <h1 id="bigh1">0%</h1>
+    <h1>Sadet Dashboard</h1>
 </div>
 
-<div class="outer-chart">
-    <div class="chart">
-        <canvas id="myChart"></canvas>
+<div class="data-selection">
+    <div class="data-manipulation">
+        <div class="data-search">
+            <label><input type="text" id="data-search"></label>
+        </div>
+        <div class="data-option">
+            <label> <input type="checkbox" id="data-option-n0"> No 0%</label>
+            <label> <input type="checkbox" id="data-option-n100"> No 100%</label>
+            <label> <input type="checkbox" id="data-option-dropped"> Only Dropped</label>
+        </div>
+    </div>
+    <div class="table-container">
+        <table class="data-table" id="data-table">
+            <tr>
+                <th style="display:none">Appid</th>
+                <th>Name</th>
+                <th>Completion</th>
+                <th style="display:none">Dropped</th>
+            </tr>
+        </table>
+    </div>
+    <div class="data-paging">
+        <button id="data-paging-left">&lt;</button>
+        <div id="data-paging-indicator">1</div>
+        <button id="data-paging-right">&gt;</button>
     </div>
 </div>
 
+<div class="outer-chart">
+    <div class="pie-chart">
+        <canvas id="pie-chart"></canvas>
+    </div>
+    <div class="chart-info-display" id="chart-info">
+    </div>
+    <div class="chart">
+        <div class="chart-control">
+            <select>
+                <option>1 Week</option>
+                <option>1 Month</option>
+                <option>1 Year</option>
+                <option selected>All Time</option>
+            </select>
+        </div>
+
+        <div class="line-chart">
+            <canvas id="line-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+
 <script>
+    // Charts
+    const pie = document.getElementById('pie-chart');
+
+    const pieChart = new Chart(pie, {
+        type: 'pie',
+        data: [],
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+            }
+        },
+    });
+
+    const line = document.getElementById('line-chart');
+
+    const lineChart = new Chart(line, {
+        type: 'line',
+        data: [],
+        options: {
+            scales: {
+                y: {
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            }
+        },
+    });
+
+    const info = document.getElementById('chart-info');
+
     const wrapper = new ApiWrapper();
-    const charts = new Charts();
+
+    const gameTable = new GamesTable({
+        table: document.getElementById('data-table'),
+        search: {
+            input: document.getElementById('data-search')
+        },
+        filter: {
+            n0: document.getElementById('data-option-n0'),
+            n100: document.getElementById('data-option-n100'),
+            dropped: document.getElementById('data-option-dropped'),
+        },
+        paging: {
+            left: document.getElementById('data-paging-left'),
+            right: document.getElementById('data-paging-right'),
+            indicator: document.getElementById('data-paging-indicator')
+        },
+        pageSize: 7,
+        apiWrapper: wrapper
+    }).RegisterOnFillEvent(function (gameTable) {
+        gameTable.ClickFirstRow();
+    }).RegisterOnClickEvent(function (row) {
+        let appid = row.cells[0].innerText;
+        let name = row.cells[1].innerText;
+        let percent = +row.cells[2].innerText;
+        pieChart.data = {
+            labels: [name, 'missing'],
+            datasets: [
+                {
+                    label: '',
+                    data: [percent, 100 - percent],
+                    backgroundColor: ['#A100FF', '#656466'],
+                }
+            ]
+        }
+        pieChart.update();
+
+        wrapper.getGameData(appid).then(data => {
+
+            let timesArray = [];
+            let valuesArray = [];
+
+            data.data.forEach(item => {
+                const date = new Date(item.time);
+
+                timesArray.push(date.toLocaleString("de-DE"));
+                valuesArray.push(item.value);
+            });
+
+            lineChart.data = {
+                labels: timesArray,
+                datasets: [
+                    {
+                        label: name,
+                        data: valuesArray,
+                        borderColor: '#A100FF',
+                        backgroundColor: '#656466'
+                    }
+                ]
+            }
+            lineChart.update();
+            info.innerText = data.data[data.data.length - 1].value + '%';
+        });
+
+    }).Fill();
 
     bigh1 = document.getElementById('bigh1');
-    wrapper.getGameDataLimit(-1, 1).then(function (data) {
-        bigh1.innerHTML = data.data[0] + '%';
-    });
-
-
-    let myChart = document.getElementById('myChart');
-
-    wrapper.getGameDataLimit(-1, 100).then(function (data) {
-        const dataset = {
-            label: name,
-            data: data.data,
-            borderColor: "#" +
-                Math.floor(Math.random() * 255).toString(16)
-                + Math.floor(Math.random() * 255).toString(16)
-                + Math.floor(Math.random() * 255).toString(16),
-            backgroundColor: "#" +
-                Math.floor(Math.random() * 255).toString(16)
-                + Math.floor(Math.random() * 255).toString(16)
-                + Math.floor(Math.random() * 255).toString(16),
-            fill: false,
-        };
-        charts.createChart(myChart, dataset);
-    });
 </script>
 </body>
 </html>

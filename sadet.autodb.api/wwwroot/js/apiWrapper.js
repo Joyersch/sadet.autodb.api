@@ -35,4 +35,8 @@ class ApiWrapper {
             data: data.data.splice(-limit)
         };
     }
+
+    async getTableData() {
+        return await this.doGetRequest('api/dashboard');
+    }
 }

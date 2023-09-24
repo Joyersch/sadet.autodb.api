@@ -13,8 +13,8 @@ public class GamesRepository : IGamesRepository
     {
         _context = context;
     }
-    
-    public bool Exists(int appid)
+
+    public bool Exists(long appid)
     {
         return _context.Games.Any(g => g.Appid == appid);
     }
@@ -23,8 +23,8 @@ public class GamesRepository : IGamesRepository
     {
         return _context.Games.ToArray();
     }
-    
-    public Game Get(int appid)
+
+    public Game Get(long appid)
     {
         return _context.Games.First(g => g.Appid == appid);
     }
