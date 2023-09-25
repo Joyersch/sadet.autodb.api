@@ -12,6 +12,14 @@ public class DataController : Controller
 {
     private readonly IDataRepository _repository;
 
+    public enum Limit
+    {
+        Week,
+        Month,
+        Year,
+        AllTime
+    }
+
     public DataController(IDataRepository repository)
     {
         _repository = repository;
@@ -25,5 +33,21 @@ public class DataController : Controller
         if (!_repository.Exists(appid))
             return NotFound();
         return Ok(_repository.GetData(appid));
+    }
+
+    [HttpGet("{appid}/{limit}")]
+    [ProducesResponseType(200, Type = typeof(ICollection<Data>))]
+    [ProducesResponseType(400)]
+    public IActionResult GetData(int appid, Limit limit)
+    {
+        if (!_repository.Exists(appid))
+            return NotFound();
+        return Ok(_repository.GetData(appid, limit switch
+        {
+            Limit.Week => new TimeSpan(7, 0, 0, 0),
+            Limit.Month => new TimeSpan(28, 0, 0, 0, 0),
+            Limit.Year => new TimeSpan(365, 0, 0, 0),
+            Limit.AllTime => TimeSpan.FromTicks(DateTime.Now.Ticks),
+        }));
     }
 }

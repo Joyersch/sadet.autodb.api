@@ -33,12 +33,12 @@ public class DataRepository : IDataRepository
         return _context.Data.Any(d => d.Appid == appid);
     }
 
-    public DataSet GetData(long appId, int limit)
+    public DataSet GetData(long appId, TimeSpan limit)
     {
         var innerData = _context.Data.Where(d => d.Appid == appId)
             .OrderBy(d => d.CreateDate)
             .Select(d => new DataEntry { Time = d.CreateDate, Value = d.Completion })
-            .Take(limit)
+            .Where(d => d.Time + limit >= DateTime.UtcNow)
             .ToArray();
 
         return new DataSet()
@@ -46,25 +46,5 @@ public class DataRepository : IDataRepository
             Count = innerData.Length,
             Data = innerData
         };
-    }
-
-    /*
-    public DataSet GetData(long appId, int limit)
-    {
-        var data = GetData(appId);
-        data.Count = limit;
-        data.Data = data.Data[^limit..data.Data.Length];
-        return data;
-    }
-    */
-
-    public bool HasDropped(long appId)
-    {
-        var max = _context.Data.Where(d => d.Appid == appId)
-            .Max(d => d.Completion);
-
-        var latest = GetData(appId, 1).Data[0].Value;
-
-        return max > latest;
     }
 }

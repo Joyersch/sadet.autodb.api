@@ -28,6 +28,14 @@ class ApiWrapper {
         return await this.doGetRequest('api/data/' + id);
     }
 
+    /*
+    * Supported limit values:
+    *  week, month, year, alltime
+    * */
+    async getGameDataWithDateLimit(id, limit) {
+        return await this.doGetRequest('api/data/' + id + '/' + limit);
+    }
+
     async getGameDataLimit(id, limit) {
         let data = await this.doGetRequest('api/data/' + id);
         return {
