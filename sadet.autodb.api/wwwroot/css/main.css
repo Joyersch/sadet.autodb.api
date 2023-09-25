@@ -131,7 +131,7 @@
     background: #cdcdcd;
 }
 
-@media (max-width: 767px) {
+@media (orientation: portrait) {
     .outer-chart {
         flex-flow: column;
     }
