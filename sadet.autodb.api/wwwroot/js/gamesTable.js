@@ -104,10 +104,7 @@ class GamesTable {
         let max = this.pageCurrent * this.pageSize + this.pageSize;
         for (let i = this.pageCurrent * this.pageSize; i < max; i++) {
             let rowData = this.data[i];
-
-            if (this.pageCurrent + 1 >= this.pageMax &&
-                (i > max - this.pageOverstep ||
-                    (this.pageOverstep === this.data.length && i >= this.pageOverstep)))
+            if (rowData === undefined)
                 rowData = {
                     appid: -i,
                     name: '...',
